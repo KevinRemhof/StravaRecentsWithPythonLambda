@@ -9,5 +9,24 @@ Key features include:
 * Local version (recents.py and recents2.py) for testing purposes
 * AWS Lambda (recentLambda.py and recentLambdaThree.py) versions
 
-TODO
-Use AWS Lambda Layers to clean up the mess of folders and runtimes
+This uses a AWS Lambda Layer to upload stravalib without cluttering the directory 
+
+From this article
+https://towardsdatascience.com/introduction-to-amazon-lambda-layers-and-boto3-using-python3-39bd390add17
+
+```
+├── lambda_function
+└── lambda_layers
+    └── python
+        └── lib
+            └── python3.7
+                └── site-packages
+```
+
+Installed stravalib to the structure
+```
+pip3 install stravalib -t lambda_layers/python/lib/python3.7/site-packages/.
+zip -r9 stravalib
+cd lambda_layers
+zip -r9 stravalib_lambda_layer.zip *
+```

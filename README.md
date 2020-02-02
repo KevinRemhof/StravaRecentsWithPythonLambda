@@ -6,8 +6,9 @@ It pulls back the last 7, 30, and 90 days of activities and shows you your dista
 It is built using Python and uses [stravalib](https://pythonhosted.org/stravalib/) to pull from Strava.
 
 Key features include:
-* Local version (recents.py and recents2.py) for testing purposes
-* AWS Lambda (recentLambda.py and recentLambdaThree.py) versions
+* AWS Lambda
+* AWS Lambda Layer to make it prettier
+* Amazing graphics (ha, not really)
 
 This uses a AWS Lambda Layer to upload stravalib without cluttering the directory 
 

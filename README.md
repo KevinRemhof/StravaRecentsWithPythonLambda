@@ -1,7 +1,7 @@
 # strava-py
 This is a simple project to pull back data from Strava.
 
-It pulls back the last 7, 30, and 90 days of activities and shows you your distance, elevation gain, time, and averages.
+It pulls back the last 7, 30, and 90 days of activities of type Ride, VirtualRide, and EBikeRide and shows you your distance, elevation gain, time, and averages.
 
 It is built using Python and uses [stravalib](https://pythonhosted.org/stravalib/) to pull from Strava.
 

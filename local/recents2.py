@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 #Global Variables - Create a file called 'client.secret.txt' and put in the 'Client ID' and 'Your Access Token' from https://www.strava.com/settings/api
 #client_id,your_access_token
-client_id, secret = open('client.secret.txt').read().strip().split(',')
+client_id, secret = open('local/client.secret.txt').read().strip().split(',')
 port_number = 5000
 #url = 'http://localhost:%d/authorized' % port
 #allDone = False
@@ -134,42 +134,43 @@ def GetTotalsForMultipleDays(activities):
     ytdRideLengths = []
 
     for activity in activities:
-        if activity.start_date_local > sevenDate:
-            sevenCount += 1
-            sevenDistance += activity.distance.num
-            sevenElevation += activity.total_elevation_gain.num
-            sevenTime += int(activity.moving_time.seconds)
-            sevenRideLengths.append(getMiles(activity.distance.num))
-        if activity.start_date_local > thirtyDate:
-            thirtyCount += 1
-            thirtyDistance += activity.distance.num
-            thirtyElevation += activity.total_elevation_gain.num
-            thirtyTime += int(activity.moving_time.seconds)
-            thirtyRideLengths.append(getMiles(activity.distance.num))
-        if activity.start_date_local > ninetyDate:
-            ninetyCount += 1
-            ninetyDistance += activity.distance.num
-            ninetyElevation += activity.total_elevation_gain.num
-            ninetyTime += int(activity.moving_time.seconds)
-            ninetyRideLengths.append(getMiles(activity.distance.num))
-        if activity.start_date_local > oneeightyDate:
-            oneeightyCount += 1
-            oneeightyDistance += activity.distance.num
-            oneeightyElevation += activity.total_elevation_gain.num
-            oneeightyTime += int(activity.moving_time.seconds)
-            oneeightyRideLengths.append(getMiles(activity.distance.num))
-        if activity.start_date_local > threesixtyfiveDate:
-            threesixtyfiveCount += 1
-            threesixtyfiveDistance += activity.distance.num
-            threesixtyfiveElevation += activity.total_elevation_gain.num
-            threesixtyfiveTime += int(activity.moving_time.seconds)
-            threesixtyfiveRideLengths.append(getMiles(activity.distance.num))
-        if activity.start_date_local > ytdDate:
-            ytdCount += 1
-            ytdDistance += activity.distance.num
-            ytdElevation += activity.total_elevation_gain.num
-            ytdTime += int(activity.moving_time.seconds)
-            ytdRideLengths.append(getMiles(activity.distance.num))
+        if activity.type in (activity.RIDE, activity.VIRTUALRIDE, activity.EBIKERIDE):
+            if activity.start_date_local > sevenDate:
+                sevenCount += 1
+                sevenDistance += activity.distance.num
+                sevenElevation += activity.total_elevation_gain.num
+                sevenTime += int(activity.moving_time.seconds)
+                sevenRideLengths.append(getMiles(activity.distance.num))
+            if activity.start_date_local > thirtyDate:
+                thirtyCount += 1
+                thirtyDistance += activity.distance.num
+                thirtyElevation += activity.total_elevation_gain.num
+                thirtyTime += int(activity.moving_time.seconds)
+                thirtyRideLengths.append(getMiles(activity.distance.num))
+            if activity.start_date_local > ninetyDate:
+                ninetyCount += 1
+                ninetyDistance += activity.distance.num
+                ninetyElevation += activity.total_elevation_gain.num
+                ninetyTime += int(activity.moving_time.seconds)
+                ninetyRideLengths.append(getMiles(activity.distance.num))
+            if activity.start_date_local > oneeightyDate:
+                oneeightyCount += 1
+                oneeightyDistance += activity.distance.num
+                oneeightyElevation += activity.total_elevation_gain.num
+                oneeightyTime += int(activity.moving_time.seconds)
+                oneeightyRideLengths.append(getMiles(activity.distance.num))
+            if activity.start_date_local > threesixtyfiveDate:
+                threesixtyfiveCount += 1
+                threesixtyfiveDistance += activity.distance.num
+                threesixtyfiveElevation += activity.total_elevation_gain.num
+                threesixtyfiveTime += int(activity.moving_time.seconds)
+                threesixtyfiveRideLengths.append(getMiles(activity.distance.num))
+            if activity.start_date_local > ytdDate:
+                ytdCount += 1
+                ytdDistance += activity.distance.num
+                ytdElevation += activity.total_elevation_gain.num
+                ytdTime += int(activity.moving_time.seconds)
+                ytdRideLengths.append(getMiles(activity.distance.num))
 
     sevenEddington = getEddington(sevenRideLengths)
     sevenDistanceInMiles = getMiles(sevenDistance)
@@ -323,7 +324,7 @@ class myHandler(http.server.BaseHTTPRequestHandler):
         outputHtml += '<body>'
 
         outputHtml += '<h1>Hello, ' + str(athlete.firstname) + ' <img class="a" src="' + str(athlete.profile_medium) + '"></h1>'
-        outputHtml += '<h2>Here are your stats for the last 7, 30, and 90 days</h2>'
+        outputHtml += '<h2>Here are your ride (including virtual and eBike) stats for the last 7, 30, and 90 days</h2>'
         
         activities = GetActivitiesFromDaysBack(client,90)
 

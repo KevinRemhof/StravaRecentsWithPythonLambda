@@ -64,6 +64,23 @@ def getEddington(rides) -> int:
 
     return E
 
+def GetSummary(client, athlete):
+    ytdStats = client.get_athlete_stats(athlete.id)
+    ytdRideTotals = ytdStats.ytd_ride_totals
+
+    print(ytdRideTotals.count)
+    print(ytdRideTotals.distance)
+    print(ytdRideTotals.elevation_gain)
+    print(ytdRideTotals.moving_time)
+    print(ytdRideTotals.moving_time.seconds)
+    print(ytdRideTotals.moving_time.days)
+
+    elapsedMinutes = round(((ytdRideTotals.moving_time.days * 24 * 60 *60) + ytdRideTotals.moving_time.seconds ) / 60)
+
+    currDate = datetime.datetime.now()
+
+    return RideTotals("YTD", currDate.timetuple().tm_yday, ytdRideTotals.count, getMiles(ytdRideTotals.distance.num), getFeet(ytdRideTotals.elevation_gain.num), elapsedMinutes, 0)
+
 @dataclass
 class RideTotals:
     title : str
@@ -259,11 +276,12 @@ def buildHead():
 
     return outputHtml
 
-def buildStatsTableThree(rideTotals1, rideTotals2, rideTotals3):
+def buildStatsTableThree(ytd, rideTotals1, rideTotals2, rideTotals3):
     outputHtml = '<table id="customers">'
 
     outputHtml += '<tr>'
     outputHtml += '<th>Days</th>'
+    outputHtml += '<th>Year to Date</th>'
     outputHtml += '<th>' + rideTotals1.title + '</th>'
     outputHtml += '<th>' + rideTotals2.title + '</th>'
     outputHtml += '<th>' + rideTotals3.title + '</th>'
@@ -271,36 +289,42 @@ def buildStatsTableThree(rideTotals1, rideTotals2, rideTotals3):
 
     outputHtml += '<tr>'
     outputHtml += '<td>Miles</td>'
+    outputHtml += '<td>' + f'{ytd.distance:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals1.distance:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals2.distance:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals3.distance:,}' + '</td>'
     outputHtml += '</tr>'
     outputHtml += '<tr>'
     outputHtml += '<td>Feet</td>'
+    outputHtml += '<td>' + f'{ytd.elevation:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals1.elevation:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals2.elevation:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals3.elevation:,}' + '</td>'
     outputHtml += '</tr>'
     outputHtml += '<tr>'
     outputHtml += '<td>Minutes</td>'
+    outputHtml += '<td>' + f'{ytd.minutes:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals1.minutes:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals2.minutes:,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals3.minutes:,}' + '</td>'
     outputHtml += '</tr>'
     outputHtml += '<tr>'
     outputHtml += '<td>Miles/day</td>'
+    outputHtml += '<td>' + f'{ytd.miles_per_day():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals1.miles_per_day():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals2.miles_per_day():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals3.miles_per_day():,}' + '</td>'
     outputHtml += '</tr>'
     outputHtml += '<tr>'
     outputHtml += '<td>Feet/mile</td>'
+    outputHtml += '<td>' + f'{ytd.feet_per_mile():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals1.feet_per_mile():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals2.feet_per_mile():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals3.feet_per_mile():,}' + '</td>'
     outputHtml += '</tr>'
     outputHtml += '<tr>'
     outputHtml += '<td>Minutes/day</td>'
+    outputHtml += '<td>' + f'{ytd.time_per_day():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals1.time_per_day():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals2.time_per_day():,}' + '</td>'
     outputHtml += '<td>' + f'{rideTotals3.time_per_day():,}' + '</td>'
@@ -357,13 +381,16 @@ def lambda_handler(event, context):
     
     activities = GetActivitiesFromDaysBack(client,90)
 
+    ytd = GetSummary(client, athlete)
+
     seven,thirty,ninety,oneeighty,threesixtyfive,yeartodate = GetTotalsForMultipleDays(activities)
 
     print(seven)
     print(thirty)
     print(ninety)
+    print(ytd)
     
-    outputHtml += buildStatsTableThree(seven,thirty,ninety)
+    outputHtml += buildStatsTableThree(ytd,seven,thirty,ninety)
     outputHtml += '</div>'
     outputHtml += '</body>'
     outputHtml += '</html>'

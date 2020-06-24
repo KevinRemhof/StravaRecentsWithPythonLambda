@@ -122,33 +122,6 @@ def GetTotalsForMultipleDays(activities):
     ninetyDate = datetime.datetime.now() + datetime.timedelta(90 * -1)
     ninetyRideLengths = []
 
-    oneeightyCount = 0
-    oneeightyDistance = 0
-    oneeightyElevation = 0
-    oneeightyTime = 0
-    oneeightyDate = datetime.datetime.now() + datetime.timedelta(180 * -1)
-    oneeightyRideLengths = []
-
-    threesixtyfiveCount = 0
-    threesixtyfiveDistance = 0
-    threesixtyfiveElevation = 0
-    threesixtyfiveTime = 0
-    threesixtyfiveDate = datetime.datetime.now() + datetime.timedelta(365 * -1)
-    threesixtyfiveRideLengths = []
-
-    ytdCount = 0
-    ytdDistance = 0
-    ytdElevation = 0
-    ytdTime = 0
-    #TODO make this the actual YTD
-    currDate = datetime.datetime.now()
-    currYear = currDate.year
-    ytdDate = datetime.datetime(currYear, 1, 1)
-    ytdDayOfYear = currDate.timetuple().tm_yday
-
-
-    ytdRideLengths = []
-
     for activity in activities:
         if activity.type in (activity.RIDE, activity.VIRTUALRIDE, activity.EBIKERIDE):
             if activity.start_date_local > sevenDate:
@@ -169,24 +142,6 @@ def GetTotalsForMultipleDays(activities):
                 ninetyElevation += activity.total_elevation_gain.num
                 ninetyTime += int(activity.moving_time.seconds)
                 ninetyRideLengths.append(getMiles(activity.distance.num))
-            if activity.start_date_local > oneeightyDate:
-                oneeightyCount += 1
-                oneeightyDistance += activity.distance.num
-                oneeightyElevation += activity.total_elevation_gain.num
-                oneeightyTime += int(activity.moving_time.seconds)
-                oneeightyRideLengths.append(getMiles(activity.distance.num))
-            if activity.start_date_local > threesixtyfiveDate:
-                threesixtyfiveCount += 1
-                threesixtyfiveDistance += activity.distance.num
-                threesixtyfiveElevation += activity.total_elevation_gain.num
-                threesixtyfiveTime += int(activity.moving_time.seconds)
-                threesixtyfiveRideLengths.append(getMiles(activity.distance.num))
-            if activity.start_date_local > ytdDate:
-                ytdCount += 1
-                ytdDistance += activity.distance.num
-                ytdElevation += activity.total_elevation_gain.num
-                ytdTime += int(activity.moving_time.seconds)
-                ytdRideLengths.append(getMiles(activity.distance.num))
 
     sevenEddington = getEddington(sevenRideLengths)
     sevenDistanceInMiles = getMiles(sevenDistance)
@@ -203,23 +158,8 @@ def GetTotalsForMultipleDays(activities):
     ninetyElevationInFeet = getFeet(ninetyElevation)
     ninetyTimeInMinutes = round(ninetyTime / 60)
 
-    oneeightyEddington = getEddington(oneeightyRideLengths)
-    oneeightyDistanceInMiles = getMiles(oneeightyDistance)
-    oneeightyElevationInFeet = getFeet(oneeightyElevation)
-    oneeightyTimeInMinutes = round(oneeightyTime / 60)
-
-    threesixtyfiveEddington = getEddington(threesixtyfiveRideLengths)
-    threesixtyfiveDistanceInMiles = getMiles(threesixtyfiveDistance)
-    threesixtyfiveElevationInFeet = getFeet(threesixtyfiveElevation)
-    threesixtyfiveTimeInMinutes = round(threesixtyfiveTime / 60)
-
-    ytdEddington = getEddington(ytdRideLengths)
-    ytdDistanceInMiles = getMiles(ytdDistance)
-    ytdElevationInFeet = getFeet(ytdElevation)
-    ytdTimeInMinutes = round(ytdTime / 60)
-
     #Note: the final return is year to date which uses a different title
-    return RideTotals('7',7,sevenCount,sevenDistanceInMiles,sevenElevationInFeet,sevenTimeInMinutes,sevenEddington),RideTotals('30',30,thirtyCount,thirtyDistanceInMiles,thirtyElevationInFeet,thirtyTimeInMinutes,thirtyEddington),RideTotals('90',90,ninetyCount,ninetyDistanceInMiles,ninetyElevationInFeet,ninetyTimeInMinutes,ninetyEddington),RideTotals('180',180,oneeightyCount,oneeightyDistanceInMiles,oneeightyElevationInFeet,oneeightyTimeInMinutes,oneeightyEddington),RideTotals('365',365,threesixtyfiveCount,threesixtyfiveDistanceInMiles,threesixtyfiveElevationInFeet,threesixtyfiveTimeInMinutes,threesixtyfiveEddington),RideTotals('Year to Date (Day ' + str(ytdDayOfYear) + ')',ytdDayOfYear,ytdCount,ytdDistanceInMiles,ytdElevationInFeet,ytdTimeInMinutes,ytdEddington)
+    return RideTotals('7',7,sevenCount,sevenDistanceInMiles,sevenElevationInFeet,sevenTimeInMinutes,sevenEddington),RideTotals('30',30,thirtyCount,thirtyDistanceInMiles,thirtyElevationInFeet,thirtyTimeInMinutes,thirtyEddington),RideTotals('90',90,ninetyCount,ninetyDistanceInMiles,ninetyElevationInFeet,ninetyTimeInMinutes,ninetyEddington)
 
 def buildHead():
     outputHtml = '<head>'
@@ -377,13 +317,10 @@ def lambda_handler(event, context):
 
     outputHtml += '<div class="container">'
     outputHtml += '<h1>Hello, ' + str(athlete.firstname) + ' <img class="a" src="' + str(athlete.profile_medium) + '"></h1>'
-    outputHtml += '<h2>Here are your ride (including virtual and eBike) stats for the last 7, 30, and 90 days</h2>'
     
     activities = GetActivitiesFromDaysBack(client,90)
-
+    seven,thirty,ninety = GetTotalsForMultipleDays(activities)
     ytd = GetSummary(client, athlete)
-
-    seven,thirty,ninety,oneeighty,threesixtyfive,yeartodate = GetTotalsForMultipleDays(activities)
 
     print(seven)
     print(thirty)

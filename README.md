@@ -8,6 +8,7 @@ It is built using Python and uses [stravalib](https://pythonhosted.org/stravalib
 Key features include:
 * AWS Lambda
 * AWS Lambda Layer to make it prettier
+* S3 bucket to host the main web page and graphics
 * Amazing graphics (ha, not really)
 
 This uses a AWS Lambda Layer to upload stravalib without cluttering the directory 
@@ -22,6 +23,7 @@ https://towardsdatascience.com/introduction-to-amazon-lambda-layers-and-boto3-us
         └── lib
             └── python3.7
                 └── site-packages
+└── s3_files
 ```
 
 Installed stravalib to the structure

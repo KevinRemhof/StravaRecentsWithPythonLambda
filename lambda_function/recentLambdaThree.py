@@ -68,6 +68,7 @@ def GetSummary(client, athlete):
     ytdStats = client.get_athlete_stats(athlete.id)
     ytdRideTotals = ytdStats.ytd_ride_totals
 
+    print('Called get_authlete_stats')
     print(ytdRideTotals.count)
     print(ytdRideTotals.distance)
     print(ytdRideTotals.elevation_gain)
